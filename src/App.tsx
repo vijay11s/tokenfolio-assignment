@@ -21,14 +21,19 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
-  const handleSelectCrypto = (crypto: Record<string, any>) => {
+  const handleSelectCrypto = (
+    crypto: Record<string, any>,
+    isRecentClicked: boolean = false
+  ) => {
     setSelectedCrypto(crypto);
     setSearch("");
-    const newRecentSearches =
-      recentSearches.length >= 10
-        ? [...new Set([...recentSearches.slice(1), crypto])]
-        : [...new Set([...recentSearches, crypto])];
-    setRecentSearches(newRecentSearches);
+    if (!isRecentClicked) {
+      const newRecentSearches =
+        recentSearches.length >= 10
+          ? [...new Set([...recentSearches.slice(1), crypto])]
+          : [...new Set([...recentSearches, crypto])];
+      setRecentSearches(newRecentSearches);
+    }
   };
 
   useEffect(() => {
@@ -103,7 +108,7 @@ const App: React.FC = () => {
                 {recentSearches.map((crypto) => (
                   <li
                     key={crypto.id}
-                    onClick={() => handleSelectCrypto(crypto)}
+                    onClick={() => handleSelectCrypto(crypto, true)}
                     className="cursor-pointer capitalize hover:underline text-blue-300 font-semibold"
                   >
                     {crypto.id}

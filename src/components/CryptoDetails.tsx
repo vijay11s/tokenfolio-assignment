@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { currencies } from "../lib/constants";
-import { formatCurrency } from "../utils";
+import { formatCurrency, convertMarketCap } from "../utils";
 import LoadingSpinner from "./LoadingSpinner";
 
 interface Props {
@@ -57,11 +57,6 @@ const CryptoDetails: React.FC<Props> = ({
     }
   }, [selectedCrypto?.id, selectedCurrency]);
 
-  const currentPrice = formatCurrency(
-    cryptoPrices[selectedCrypto?.id]?.[selectedCurrency] ?? 0,
-    selectedCurrency
-  );
-
   if (isLoading) {
     return (
       <div className="flex justify-center">
@@ -74,6 +69,22 @@ const CryptoDetails: React.FC<Props> = ({
     return <p className="text-red-200 font-semibold">Error: {error}</p>;
   }
 
+  const currentPrice = formatCurrency(
+    cryptoPrices[selectedCrypto?.id]?.[selectedCurrency] ?? 0,
+    selectedCurrency
+  );
+
+  const marketCap = formatCurrency(
+    convertMarketCap(
+      selectedCrypto?.market_cap,
+      cryptoPrices[selectedCrypto?.id]?.usd,
+      cryptoPrices[selectedCrypto?.id]?.[selectedCurrency]
+    ) ?? 0,
+    selectedCurrency
+  );
+
+  const priceChange = selectedCrypto.price_change_percentage_24h;
+
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-1">
@@ -84,9 +95,15 @@ const CryptoDetails: React.FC<Props> = ({
         />
         <h2 className="text-xl font-bold">{selectedCrypto.name}</h2>
       </div>
-
+      <p>Symbol: {selectedCrypto?.symbol?.toUpperCase()}</p>
       <p>Current Price: {currentPrice}</p>
-      <p>24h Change: {selectedCrypto.price_change_percentage_24h}%</p>
+      <p>Market Cap: {marketCap}</p>
+      <p>
+        24h Change:{" "}
+        <span className={priceChange > 0 ? "text-green-400" : "text-red-400"}>
+          {priceChange}%
+        </span>
+      </p>
     </div>
   );
 };

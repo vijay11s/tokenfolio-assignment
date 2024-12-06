@@ -24,12 +24,11 @@ const App: React.FC = () => {
   const handleSelectCrypto = (crypto: Record<string, any>) => {
     setSelectedCrypto(crypto);
     setSearch("");
-    setRecentSearches((prev: string | any[]) => {
-      if (prev.length >= 10) {
-        return [...new Set([...prev.slice(1), crypto])].slice(0, 10);
-      }
-      return [...new Set([...prev, crypto])].slice(0, 10);
-    });
+    const newRecentSearches =
+      recentSearches.length >= 10
+        ? [...new Set([...recentSearches.slice(1), crypto])]
+        : [...new Set([...recentSearches, crypto])];
+    setRecentSearches(newRecentSearches);
   };
 
   useEffect(() => {
